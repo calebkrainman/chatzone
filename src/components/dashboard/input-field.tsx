@@ -1,7 +1,7 @@
 "use client";
 
-import { postMessage } from "@/lib/messages";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { Socket } from "socket.io-client";
 import { toast } from "sonner";
@@ -26,6 +26,33 @@ export function MessageInput({
 
   type schemaType = z.infer<typeof formSchema>;
 
+  const { mutate: postMessage } = useMutation({
+    mutationKey: ["postMessage", channelId],
+    mutationFn: async (messageContent: string) => {
+      const res = await fetch(`/api/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content: messageContent, channelId: channelId }),
+      });
+      if (!res.ok) {
+        throw new Error(`Failed to make post!`);
+      }
+      return res.json();
+    },
+    onSuccess: (res) => {
+      form.reset();
+      socket.emit("chat message", res);
+    },
+    onError: (error) => {
+      toast.error(
+        error instanceof Error
+          ? `Failed to post message: ${error.message}`
+          : `An unknown error occurred while posting the message!`,
+      );
+    },
+  });
   const form = useForm<schemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,21 +72,7 @@ export function MessageInput({
    * @throws Will throw an error if the message posting fails
    */
   async function onSubmit(formData: schemaType) {
-    try {
-      const res = await postMessage({
-        content: formData.message,
-        channelId: channelId,
-      });
-      form.reset();
-      socket.emit("chat message", res.newMessage);
-      toast.success(`Message Posted! ${res.newMessage.content}`);
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error(`An unknown error has occured`);
-      }
-    }
+    postMessage(formData.message);
   }
 
   return (
