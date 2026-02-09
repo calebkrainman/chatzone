@@ -6,7 +6,7 @@ import { Hash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { Channel, Server } from "../../../generated/prisma";
-import { ActiveUserSection } from "./active-users";
+
 import { MainChatArea } from "./main-chat-area";
 
 /**
@@ -156,9 +156,6 @@ export function Dashboard() {
           <p className="text-gray-600">Loading chat…</p>
         </div>
       )}
-
-      {/* Right Sidebar - Active Users */}
-      <ActiveUserSection />
     </div>
   );
 }
