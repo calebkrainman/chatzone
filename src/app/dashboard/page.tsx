@@ -1,4 +1,5 @@
-import { Dashboard } from "@/components/dashboard/dashboard";
+import { MainPage } from "@/components/main/main";
+import prisma from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 
@@ -11,9 +12,12 @@ import { redirect } from "next/navigation";
  */
 export default async function DashboardPage() {
   const session = await getSession();
+
   if (!session) {
     redirect("/login");
   }
 
-  return <Dashboard />;
+  const servers = await prisma.server.findMany();
+
+  return <MainPage servers={servers} />;
 }
