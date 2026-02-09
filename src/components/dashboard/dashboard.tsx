@@ -1,12 +1,10 @@
 "use client";
 
-import { getChannels } from "@/lib/channels";
-import { getServers } from "@/lib/servers";
+import { useQuery } from "@tanstack/react-query";
 import { Hash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { Channel, Server } from "../../../generated/prisma";
-
 import { MainChatArea } from "./main-chat-area";
 
 /**
@@ -17,12 +15,30 @@ import { MainChatArea } from "./main-chat-area";
  * It fetches servers and channels from the backend and establishes a WebSocket connection for real-time chat
  * The layout is styled using Tailwind CSS for a modern and responsive design
  */
-export function Dashboard() {
-  const [servers, setServers] = useState<Server[]>([]);
+export function Dashboard({ servers }: { servers: Server[] }) {
   const [channels, setChannels] = useState<Channel[]>([]);
-  const [selectedServer, setSelectedServer] = useState<Server | null>(null);
+  const [selectedServer, setSelectedServer] = useState<Server>(servers[0]);
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
   const [socket, setSocket] = useState<Socket>();
+
+  const { data, isError } = useQuery({
+    queryKey: [`channels`, selectedServer.id],
+    queryFn: async (): Promise<Channel[]> => {
+      const res = await fetch(`/api/channels?serverId=${selectedServer.id}`);
+      if (!res.ok) {
+        throw new Error("Failed to fetch channels");
+      }
+      const result = await res.json();
+      return result;
+    },
+  });
+
+  useEffect(() => {
+    if (data && !isError) {
+      setChannels(data);
+      setSelectedChannel(data[0]);
+    }
+  }, [data]);
 
   /**
    * Establishes a WebSocket connection to the server
@@ -42,56 +58,9 @@ export function Dashboard() {
     };
   }, []);
 
-  useEffect(() => {
-    if (socket && selectedChannel) {
-      socket.emit("join", selectedChannel.id);
-    }
-  }, [socket, selectedChannel]);
-  /**
-   * Fetches the list of servers from the backend
-   * The fetched servers are stored in the component's state
-   * If there is no selected server and the fetched list is not empty,
-   */
-  useEffect(() => {
-    async function fetchServers() {
-      try {
-        const res = await getServers();
-        setServers(res);
-        if (selectedServer === null && res.length > 0) {
-          setSelectedServer(res[0]);
-        }
-        return res;
-      } catch (error) {
-        console.error("Failed to fetch servers", error);
-      }
-    }
-    fetchServers();
-  }, []);
-
-  /**
-   * Fetches the list of channels for the selected server
-   * The fetched channels are stored in the component's state
-   * If there is a selected server, it fetches the channels for that server
-   * If there is no selected server, it returns early
-   * If fetching channels fails, it logs an error to the console
-   * The function is called whenever the selectedServer changes
-   */
-  useEffect(() => {
-    async function fetchChannels() {
-      if (!selectedServer) {
-        return;
-      }
-      try {
-        const res = await getChannels({ serverId: selectedServer.id });
-        setChannels(res);
-        setSelectedChannel(res[0]);
-        return res;
-      } catch (error) {
-        console.error("Failed to fetch channels", error);
-      }
-    }
-    fetchChannels();
-  }, [selectedServer]);
+  if (socket && selectedChannel) {
+    socket.emit("join", selectedChannel.id);
+  }
 
   return (
     <div className="h-screen w-full bg-gradient-to-br from-sky-200 via-blue-200 to-cyan-200 flex overflow-hidden z-10">
@@ -103,7 +72,7 @@ export function Dashboard() {
             Servers
           </h2>
           <div className="space-y-2">
-            {servers?.map((server) => (
+            {servers.map((server) => (
               <button
                 key={server.id}
                 onClick={() => setSelectedServer(server)}
@@ -130,7 +99,7 @@ export function Dashboard() {
             Channels
           </h3>
           <div className="space-y-1">
-            {channels?.map((channel) => (
+            {channels.map((channel) => (
               <button
                 key={channel.id}
                 onClick={() => setSelectedChannel(channel)}
