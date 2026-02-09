@@ -39,7 +39,6 @@ async function signIn() {
  */
 export default async function LandingPage() {
   const session = await getSession();
-  console.log(session);
   return (
     <div className="min-h-screen w-full bg-gradient-to-br relative overflow-hidden">
       {/* Background Elements */}
