@@ -2,14 +2,12 @@
 
 import { postMessage } from "@/lib/messages";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SmilePlusIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Socket } from "socket.io-client";
 import { toast } from "sonner";
 import z from "zod";
 import { Form, FormField, FormItem, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 export function MessageInput({
   channelId,
@@ -82,12 +80,6 @@ export function MessageInput({
                         autoComplete="off"
                         className="bg-white/30 backdrop-blur-sm border-white/40 rounded-2xl px-auto text-gray-800 placeholder:text-gray-600"
                       />
-                      <Popover>
-                        <PopoverTrigger>
-                          <SmilePlusIcon className="hover:cursor-pointer hover:text-blue-500 hover:size-8 transition-all" />
-                        </PopoverTrigger>
-                        <PopoverContent>Hi Ben!</PopoverContent>
-                      </Popover>
                     </div>
                     <FormMessage />
                   </FormItem>
