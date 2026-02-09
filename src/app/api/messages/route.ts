@@ -2,7 +2,12 @@ import prisma from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 
 import { NextRequest, NextResponse } from "next/server";
+import z from "zod";
 
+const PostSchema = z.object({
+  content: z.string().min(1, "Content cannot be empty"),
+  channelId: z.string().min(1, "Channel ID is required"),
+});
 /**
  *
  * @param request - The incoming NextRequest object
@@ -22,7 +27,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   if (!session) {
     return NextResponse.json(
       { error: `Failed to authenticate` },
-      { status: 401 }
+      { status: 401 },
     );
   }
   const channelId = request.nextUrl.searchParams.get("channelId");
@@ -63,24 +68,27 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   if (!session) {
     return NextResponse.json(
       { error: `Failed to authenticate` },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
   const body = await request.json();
-  const { content, channelId } = body;
+  const parseResult = PostSchema.safeParse(body);
 
-  if (!content || !channelId) {
-    return NextResponse.json({ error: `Missing Fields` }, { status: 400 });
+  if (!parseResult.success) {
+    return NextResponse.json(
+      { error: `Missing Fields ${parseResult.error}` },
+      { status: 400 },
+    );
   }
 
   try {
     const newMessage = await prisma.post.create({
       data: {
-        content,
-        channelId,
-        authorId: session.user.id,
-        authorName: session.user.name || "Anonymous",
+        content: `${parseResult.data.content}`,
+        channelId: `${parseResult.data.channelId}`,
+        authorId: `${session.user.id}`,
+        authorName: `${session.user.name}` || `Anonymous User`,
       },
     });
 
