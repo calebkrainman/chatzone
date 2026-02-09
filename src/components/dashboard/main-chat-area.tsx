@@ -1,16 +1,13 @@
 "use client";
-import { getMessages } from "@/lib/messages";
+import { MessageInput } from "@/components/dashboard/input-field";
+import { useQuery } from "@tanstack/react-query";
 import { Hash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
 import { Channel, Post } from "../../../generated/prisma";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { ScrollArea } from "../ui/scroll-area";
-import { MessageInput } from "./input-field";
 
-type ChatType = {
-  content: string;
-};
 export function MainChatArea({
   selectedChannel,
   socket,
@@ -28,21 +25,23 @@ export function MainChatArea({
    * The function is called whenever the selectedChannel changes
    *
    */
+
+  const { data, isError } = useQuery({
+    queryKey: [`messages`, selectedChannel.id],
+    queryFn: async (): Promise<Post[]> => {
+      const res = await fetch(`/api/messages?channelId=${selectedChannel.id}`);
+      if (!res.ok) {
+        throw new Error("Failed to fetch messages");
+      }
+      return res.json();
+    },
+  });
+
   useEffect(() => {
-    const fetchMessages = async () => {
-      if (!selectedChannel) {
-        return;
-      }
-      try {
-        const res = await getMessages({ channelId: selectedChannel.id });
-        setMessages(res);
-        return res;
-      } catch (error) {
-        console.error("Failed to fetch messages", error);
-      }
-    };
-    fetchMessages();
-  }, [selectedChannel]);
+    if (data && !isError) {
+      setMessages(data);
+    }
+  }, [data, isError]);
 
   /**
    * Sets up a WebSocket listener for incoming chat messages
