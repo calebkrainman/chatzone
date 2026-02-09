@@ -5,8 +5,6 @@ import { useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
 import { Channel, Post } from "../../../generated/prisma";
 import { Avatar, AvatarFallback } from "../ui/avatar";
-import { Badge } from "../ui/badge";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { ScrollArea } from "../ui/scroll-area";
 import { MessageInput } from "./input-field";
 
@@ -76,9 +74,6 @@ export function MainChatArea({
           <h1 className="text-xl font-semibold text-gray-800">
             {selectedChannel?.name || `Select a Channel`}
           </h1>
-          <Badge variant="secondary" className="bg-white/30 text-gray-700">
-            3 online
-          </Badge>
         </div>
       </div>
 
@@ -86,20 +81,13 @@ export function MainChatArea({
         <div className="space-y-4">
           {messages.map((msg) => (
             <div key={msg.id} className="flex items-start gap-3 group">
-              <Popover>
-                <PopoverTrigger>
-                  <Avatar className="w-10 h-10 shadow-lg hover:cursor-pointer">
-                    <AvatarFallback
-                      className={`bg-gradient-to-r bg-blue-500 text-white`}
-                    >
-                      {msg.authorName[0]}
-                    </AvatarFallback>
-                    <PopoverContent>
-                      Place content for the popover here.
-                    </PopoverContent>
-                  </Avatar>
-                </PopoverTrigger>
-              </Popover>
+              <Avatar className="w-10 h-10 shadow-lg">
+                <AvatarFallback
+                  className={`bg-gradient-to-r bg-blue-500 text-white`}
+                >
+                  {msg.authorName[0]}
+                </AvatarFallback>
+              </Avatar>
 
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
