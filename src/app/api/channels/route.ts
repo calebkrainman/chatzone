@@ -8,33 +8,32 @@ import { NextRequest, NextResponse } from "next/server";
  *
  * Handles GET requests for channels
  */
-export async function GET(req: NextRequest): Promise<NextResponse> {
-  const session = await getSession();
-  if (!session) {
-    return NextResponse.json(
-      { error: `Failed to authenticate` },
-      { status: 401 }
-    );
-  }
-  const serverId = req.nextUrl.searchParams.get("serverId");
-  if (!serverId) {
-    return NextResponse.json(
-      { error: `Failed to get Server Id` },
-      { status: 400 }
-    );
-  }
-
+export async function GET(req: NextRequest) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json(
+        { error: `Failed to authenticate` },
+        { status: 401 },
+      );
+    }
+    const res = new URL(req.url);
+
+    const serverId = res.searchParams.get("serverId");
+
+    if (!serverId) {
+      return NextResponse.json({ error: `Missing serverId` }, { status: 400 });
+    }
+
     const channels = await prisma.channel.findMany({
       where: { serverId },
       orderBy: { name: "desc" },
     });
     return NextResponse.json(channels, { status: 200 });
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? `An error has occured: ${error}`
-        : `An unknown error has occured!`;
-    return NextResponse.json({ error: message }, { status: 400 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
