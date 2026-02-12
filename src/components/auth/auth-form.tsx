@@ -123,8 +123,11 @@ export function AuthForm({
         name: values.name,
         password: values.password,
         fetchOptions: {
-          onSuccess: () => {
-            toast.success(`You have successfully made an account!`);
+          onSuccess: async () => {
+            await onSubmitSignIn({
+              email: values.email,
+              password: values.password,
+            });
           },
           onResponse: () => {
             setLoading(false);
@@ -167,7 +170,6 @@ export function AuthForm({
         password: values.password,
         fetchOptions: {
           onSuccess: () => {
-            toast.success(`You have successfully signed in`);
             router.push("/dashboard");
           },
           onResponse: () => {
