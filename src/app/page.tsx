@@ -40,7 +40,7 @@ async function goToRepo() {
  */
 async function goToDashboard() {
   "use server";
-  redirect("/");
+  redirect("/dashboard");
 }
 
 /**
