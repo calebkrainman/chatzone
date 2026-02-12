@@ -34,13 +34,18 @@ export function MessageInput({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ content: messageContent, channelId: channelId }),
+        body: JSON.stringify({
+          content: `${messageContent}`,
+          channelId: `${channelId}`,
+        }),
       });
+      const result = await res.json();
       if (!res.ok) {
-        throw new Error(`Failed to make post!`);
+        throw new Error(result.error);
       }
-      return res.json();
+      return result;
     },
+
     onSuccess: (res) => {
       form.reset();
       socket.emit("chat message", res);
@@ -48,7 +53,7 @@ export function MessageInput({
     onError: (error) => {
       toast.error(
         error instanceof Error
-          ? `Failed to post message: ${error.message}`
+          ? error.message
           : `An unknown error occurred while posting the message!`,
       );
     },

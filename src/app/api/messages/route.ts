@@ -75,29 +75,40 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const parseResult = PostSchema.safeParse(body);
 
-  if (!parseResult.success) {
-    return NextResponse.json(
-      { error: `Missing Fields ${parseResult.error}` },
-      { status: 400 },
-    );
-  }
-
   try {
-    const newMessage = await prisma.post.create({
-      data: {
-        content: `${parseResult.data.content}`,
-        channelId: `${parseResult.data.channelId}`,
-        authorId: `${session.user.id}`,
-        authorName: `${session.user.name}` || `Anonymous User`,
-      },
+    if (!parseResult.success) {
+      throw new Error(`Invalid request body: ${parseResult.error.message}`);
+    }
+
+    const profanityCheck = await fetch("https://vector.profanity.dev", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: `${parseResult.data.content} filler` }),
     });
 
-    return NextResponse.json(newMessage, { status: 201 });
+    if (!profanityCheck.ok) {
+      throw new Error(`Failed to check message for profanity`);
+    }
+
+    const profanityResult = await profanityCheck.json();
+
+    if (profanityResult.isProfanity === false) {
+      const newMessage = await prisma.post.create({
+        data: {
+          content: `${parseResult.data.content}`,
+          channelId: `${parseResult.data.channelId}`,
+          authorId: `${session.user.id}`,
+          authorName: `${session.user.name}` || `Anonymous User`,
+        },
+      });
+
+      return NextResponse.json(newMessage, { status: 201 });
+    } else {
+      throw new Error("Message contains profanity and cannot be posted.");
+    }
   } catch (error) {
     const message =
-      error instanceof Error
-        ? `An error has occured: ${error}`
-        : `An unknown error has occured!`;
+      error instanceof Error ? error.message : `An unknown error has occured!`;
     return NextResponse.json({ error: message }, { status: 400 });
   }
 }
