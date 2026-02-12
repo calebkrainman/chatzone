@@ -338,8 +338,8 @@ export function AuthForm({
                     {loading
                       ? `loading`
                       : isSigningUp === true
-                      ? `Sign Up`
-                      : `Sign In`}
+                        ? `Sign Up`
+                        : `Sign In`}
                   </Button>
 
                   <Button variant="outline" type="button" className="w-full">
@@ -352,8 +352,8 @@ export function AuthForm({
               </div>
               <div className="mt-4 text-center text-sm">
                 {isSigningUp === true
-                  ? `Don't have an account?`
-                  : `Already have an account?`}
+                  ? `Already have an account?`
+                  : `Don't have an account?`}
                 {` `}
                 <a
                   onClick={() => {
