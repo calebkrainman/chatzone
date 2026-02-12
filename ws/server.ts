@@ -29,6 +29,6 @@ io.on(`connection`, async (socket: Socket) => {
 const WEBSOCKET_PORT = process.env.PORT || 3001;
 server.listen(WEBSOCKET_PORT, () => {
   console.log(
-    `WebSocket server is running on ws://localhost:${WEBSOCKET_PORT}`,
+    `WebSocket server is running on ws://${process.env.FRONTEND_URL || "localhost"}:${WEBSOCKET_PORT}`,
   );
 });
