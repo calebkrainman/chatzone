@@ -122,16 +122,20 @@ export default async function LandingPage() {
               <Button
                 size="lg"
                 className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-4 text-lg font-semibold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+                onClick={redirect("/dashboar")}
               >
                 Get Started Free
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
+            </div>
+            <div className="flex flex-col sm:flex-row justify-center gap-4 pt-8">
               <Button
-                variant="outline"
                 size="lg"
-                className="bg-white/30 backdrop-blur-sm border-2 border-white/40 hover:bg-white/40 text-gray-800 px-8 py-4 text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-4 text-lg font-semibold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+                onClick={redirect("https://github.com/calebkrainman/chatzone")}
               >
-                Watch Demo
+                This Project is Open Source! Check it out!
+                <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </div>
 
