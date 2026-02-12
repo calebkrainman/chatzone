@@ -82,17 +82,26 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  try {
-    const newMessage = await prisma.post.create({
-      data: {
-        content: `${parseResult.data.content}`,
-        channelId: `${parseResult.data.channelId}`,
-        authorId: `${session.user.id}`,
-        authorName: `${session.user.name}` || `Anonymous User`,
-      },
-    });
+  const profanityCheck = await fetch("https://vector.profanity.dev", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: parseResult.data.content }),
+  });
 
-    return NextResponse.json(newMessage, { status: 201 });
+  const profanityResult = await profanityCheck.json();
+  try {
+    if (profanityResult.isProfanity === false) {
+      const newMessage = await prisma.post.create({
+        data: {
+          content: `${parseResult.data.content}`,
+          channelId: `${parseResult.data.channelId}`,
+          authorId: `${session.user.id}`,
+          authorName: `${session.user.name}` || `Anonymous User`,
+        },
+      });
+
+      return NextResponse.json(newMessage, { status: 201 });
+    }
   } catch (error) {
     const message =
       error instanceof Error
