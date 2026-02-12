@@ -79,7 +79,7 @@ export default async function LandingPage() {
             <div className="flex justify-center">
               <Badge className="bg-white/30 backdrop-blur-sm text-gray-800 border border-white/40 px-4 py-2 text-sm font-medium shadow-lg">
                 <Users className="w-4 h-4 mr-2" />
-                Join 7,000+ Happy Users
+                Join Our Happy Users
               </Badge>
             </div>
 
@@ -122,7 +122,7 @@ export default async function LandingPage() {
               <Button
                 size="lg"
                 className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-4 text-lg font-semibold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
-                onClick={redirect("/dashboar")}
+                onClick={redirect("/dashboard")}
               >
                 Get Started Free
                 <ArrowRight className="w-5 h-5 ml-2" />
