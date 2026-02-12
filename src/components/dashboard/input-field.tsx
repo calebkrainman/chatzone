@@ -43,7 +43,7 @@ export function MessageInput({
       if (!res.ok) {
         throw new Error(result.error);
       }
-      return res.json();
+      return result;
     },
 
     onSuccess: (res) => {
