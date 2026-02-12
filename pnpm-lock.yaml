@@ -59,9 +59,6 @@ importers:
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      prisma2:
-        specifier: 2.0.0-preview025
-        version: 2.0.0-preview025
       react:
         specifier: ^19.2.4
         version: 19.2.4
@@ -2512,9 +2509,6 @@ packages:
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
-
-  prisma2@2.0.0-preview025:
-    resolution: {integrity: sha512-mt3L4RMF8pt3IXYkmwaZzl+7sfQenGDwN2hKwbiH4ImW+rWUVPle8QIUIJQZS8taxPhbEtrEltckhv8o1t9dSw==}
 
   prisma@6.19.2:
     resolution: {integrity: sha512-XTKeKxtQElcq3U9/jHyxSPgiRgeYDKxWTPOf6NkXA0dNj5j40MfEsZkMbyNpwDWCUv7YBFUl7I2VK/6ALbmhEg==}
@@ -5250,8 +5244,6 @@ snapshots:
       source-map-js: 1.2.1
 
   prelude-ls@1.2.1: {}
-
-  prisma2@2.0.0-preview025: {}
 
   prisma@6.19.2(typescript@5.9.3):
     dependencies:
