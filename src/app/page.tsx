@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
+import prisma from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { ArrowRight, Globe, MessageCircle, Users, Zap } from "lucide-react";
 import { headers } from "next/headers";
@@ -27,6 +28,22 @@ async function signIn() {
 }
 
 /**
+ * Function to handle going to the repository
+ */
+async function goToRepo() {
+  "use server";
+  redirect("https://github.com/calebkrainman/chatzone");
+}
+
+/**
+ * Function to handle going to the dashboard
+ */
+async function goToDashboard() {
+  "use server";
+  redirect("/");
+}
+
+/**
  *
  * @returns A React component representing the landing page of the ChatZone application
  * This page features a modern and visually appealing design with gradient backgrounds and animated elements
@@ -39,6 +56,7 @@ async function signIn() {
  */
 export default async function LandingPage() {
   const session = await getSession();
+
   return (
     <div className="min-h-screen w-full bg-gradient-to-br relative overflow-hidden">
       {/* Background Elements */}
@@ -79,7 +97,7 @@ export default async function LandingPage() {
             <div className="flex justify-center">
               <Badge className="bg-white/30 backdrop-blur-sm text-gray-800 border border-white/40 px-4 py-2 text-sm font-medium shadow-lg">
                 <Users className="w-4 h-4 mr-2" />
-                Join Our Happy Users
+                Join Our {await prisma.user.count()} Happy Users
               </Badge>
             </div>
 
@@ -119,24 +137,25 @@ export default async function LandingPage() {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row justify-center gap-4 pt-8">
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-4 text-lg font-semibold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
-                onClick={redirect("/dashboard")}
-              >
-                Get Started Free
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-            </div>
-            <div className="flex flex-col sm:flex-row justify-center gap-4 pt-8">
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-4 text-lg font-semibold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
-                onClick={redirect("https://github.com/calebkrainman/chatzone")}
-              >
-                This Project is Open Source! Check it out!
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
+              <form action={goToDashboard}>
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-4 text-lg font-semibold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+                >
+                  Get Started
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </form>
+
+              <form action={goToRepo}>
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-2 text-lg font-semibold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+                >
+                  Check Out The GitHub repo!
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </form>
             </div>
 
             {/* Feature Pills */}
@@ -163,8 +182,8 @@ export default async function LandingPage() {
             In Loving Memory of Michael Sellars: Beloved Brother and Uncle
           </p>
           <p className="text-gray-500 text-sm">
-            Trusted by teams worldwide • Free forever • No credit card required
-            • Created with ❤️ by Caleb Krainman
+            {" "}
+            Created with ❤️ by Caleb Krainman
           </p>
         </footer>
       </div>
