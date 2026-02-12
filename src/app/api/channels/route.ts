@@ -31,9 +31,13 @@ export async function GET(req: NextRequest) {
     });
     return NextResponse.json(channels, { status: 200 });
   } catch (error) {
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 },
-    );
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    } else {
+      return NextResponse.json(
+        { error: "Internal Server Error" },
+        { status: 500 },
+      );
+    }
   }
 }
