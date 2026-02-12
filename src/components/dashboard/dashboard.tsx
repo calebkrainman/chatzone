@@ -51,7 +51,12 @@ export function Dashboard({ servers }: { servers: Server[] }) {
    * The effect depends on the selectedChannel state
    */
   useEffect(() => {
-    const newSocket = io(`http://localhost:3001`, {});
+    const newSocket = io(
+      process.env.NEXT_PUBLIC_FRONTEND_URL
+        ? process.env.NEXT_PUBLIC_FRONTEND_URL
+        : `http://localhost:3001`,
+      {},
+    );
     setSocket(newSocket);
     return () => {
       newSocket.disconnect();
