@@ -22,7 +22,7 @@ const PostSchema = z.object({
  * @throws Will throw an error if the message fetching or creation fails
  * @throws Will throw an error if required fields are missing
  */
-export async function GET(request: NextRequest): Promise<NextResponse> {
+export async function GET(request: NextRequest) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json(
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
  * @throws Will throw an error if the message creation fails
  * @throws Will throw an error if required fields are missing
  */
-export async function POST(request: NextRequest): Promise<NextResponse> {
+export async function POST(request: NextRequest) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json(
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       },
     });
 
-    return NextResponse.json({ newMessage }, { status: 201 });
+    return NextResponse.json(newMessage, { status: 201 });
   } catch (error) {
     const message =
       error instanceof Error
