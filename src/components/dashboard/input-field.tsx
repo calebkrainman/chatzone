@@ -21,15 +21,7 @@ export function MessageInput({
       .string()
       .min(1, `Message cannot be empty`)
       .max(56, `Message must be at most 56 characters`)
-      .trim()
-      .refine(
-        (val) => {
-          // Matches: Word + Space + Anything else
-          // This ensures there's at least one gap between characters
-          return /\S+\s+\S+/.test(val);
-        },
-        { message: "Message must contain at least two words" },
-      ),
+      .trim(),
   });
 
   type schemaType = z.infer<typeof formSchema>;
@@ -37,35 +29,23 @@ export function MessageInput({
   const { mutate: postMessage } = useMutation({
     mutationKey: ["postMessage", channelId],
     mutationFn: async (messageContent: string) => {
-      const profanityCheck = await fetch("https://vector.profanity.dev", {
+      const res = await fetch(`/api/messages`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: messageContent }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: `${messageContent}`,
+          channelId: `${channelId}`,
+        }),
       });
-
-      const profanityResult = await profanityCheck.json();
-
-      if (profanityResult.isProfanity === false) {
-        const res = await fetch(`/api/messages`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            content: messageContent,
-            channelId: channelId,
-          }),
-        });
-
-        if (!res.ok) {
-          throw new Error(`Failed to make post!`);
-        }
-
-        return res.json();
-      } else {
-        throw new Error(`Message contains profanity and cannot be posted!`);
+      const result = await res.json();
+      if (!res.ok) {
+        throw new Error(result.error);
       }
+      return res.json();
     },
+
     onSuccess: (res) => {
       form.reset();
       socket.emit("chat message", res);
@@ -73,7 +53,7 @@ export function MessageInput({
     onError: (error) => {
       toast.error(
         error instanceof Error
-          ? `Failed to post message: ${error.message}`
+          ? error.message
           : `An unknown error occurred while posting the message!`,
       );
     },
