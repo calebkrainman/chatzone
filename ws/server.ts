@@ -5,7 +5,7 @@ import { Post } from "../generated/prisma";
 const server = createServer();
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
     methods: ["GET", "POST"],
   },
 });
@@ -26,7 +26,7 @@ io.on(`connection`, async (socket: Socket) => {
   });
 });
 
-const WEBSOCKET_PORT = 3001;
+const WEBSOCKET_PORT = process.env.PORT || 3001;
 server.listen(WEBSOCKET_PORT, () => {
   console.log(
     `WebSocket server is running on ws://localhost:${WEBSOCKET_PORT}`,
