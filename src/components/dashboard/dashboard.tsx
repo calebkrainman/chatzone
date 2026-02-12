@@ -38,7 +38,7 @@ export function Dashboard({ servers }: { servers: Server[] }) {
       setChannels(data);
       setSelectedChannel(data[0]);
     }
-  }, [data]);
+  }, [data, isError]);
 
   /**
    * Establishes a WebSocket connection to the server
