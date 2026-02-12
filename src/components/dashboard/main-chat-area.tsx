@@ -2,7 +2,7 @@
 import { MessageInput } from "@/components/dashboard/input-field";
 import { useQuery } from "@tanstack/react-query";
 import { Hash } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Socket } from "socket.io-client";
 import { Channel, Post } from "../../../generated/prisma";
 import { Avatar, AvatarFallback } from "../ui/avatar";
@@ -16,6 +16,7 @@ export function MainChatArea({
   socket: Socket;
 }) {
   const [messages, setMessages] = useState<Post[]>([]);
+  const scrollRef = useRef<HTMLDivElement>(null);
   /**
    *
    * @returns A promise that resolves to an array of messages for the selected channel
@@ -59,10 +60,17 @@ export function MainChatArea({
     socket.on("chat message", (msg: Post) => {
       setMessages((prev) => [...prev, msg]);
     });
+
     return () => {
       socket.off(`chat message`);
     };
   }, [socket]);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: "instant" });
+    }
+  }, [messages]);
 
   return (
     <div className="flex-1 flex flex-col bg-white/10 backdrop-blur-sm">
@@ -109,6 +117,7 @@ export function MainChatArea({
             </div>
           ))}
         </div>
+        <div ref={scrollRef} />
       </ScrollArea>
 
       {/* Message Input */}
